@@ -1,14 +1,36 @@
 "use client";
 
-import React, { useRef, useEffect } from "react";
+import React, { useRef, useEffect, useState } from "react";
 import { ScrollTriggerAnimation } from "../animations/scroll-trigger";
 import { SOCIAL_LINKS } from "../../lib/constants";
 import { Button } from "../ui/button";
 import { ExternalLink, Radio, Users, Flame, Zap, Gamepad2 } from "lucide-react";
 import { gsap } from "gsap";
 
+// Fake chat messages - moved outside component to avoid re-creation
+const chatPool = [
+  { username: "socialist_andy", message: "COPIUM OVERDOSE", color: "text-red-400" },
+  { username: "landlord_hater", message: "EAT THE RICH", color: "text-green-400" },
+  { username: "poggers_viewer", message: "OMEGALUL TRUE", color: "text-blue-400" },
+  { username: "malding_chatter", message: "PAUSE THE STREAM", color: "text-yellow-400" },
+  { username: "based_leftist", message: "W TAKE HASAN", color: "text-purple-400" },
+  { username: "ratio_king", message: "LANDLORDS MALDING", color: "text-pink-400" },
+  { username: "chat_spammer", message: "TRUEEEEEE", color: "text-cyan-400" },
+  { username: "political_andy", message: "AMERICA DESERVED", color: "text-orange-400" },
+  { username: "himbo_enjoyer", message: "BASED KING", color: "text-emerald-400" },
+  { username: "react_viewer", message: "REACT HARDER", color: "text-indigo-400" },
+  { username: "debate_watcher", message: "DESTROY THEM", color: "text-red-500" },
+  { username: "twitch_chatter", message: "KEKW MALDING", color: "text-yellow-500" },
+  { username: "hasanabi_fan", message: "GIGACHAD TAKE", color: "text-blue-500" },
+  { username: "copium_dealer", message: "WHY DO YOU HATE ISRAEL", color: "text-gray-400" },
+  { username: "stream_watcher", message: "5HEAD ANALYSIS", color: "text-purple-500" }
+];
+
 export const TwitchLiveSection: React.FC = () => {
   const scheduleRef = useRef<HTMLDivElement>(null);
+  const chatRef = useRef<HTMLDivElement>(null);
+  const messageIdRef = useRef(0);
+  const [chatMessages, setChatMessages] = useState<Array<{id: number, username: string, message: string, color: string}>>([]);
 
   const streamSchedule = [
     {
@@ -41,6 +63,30 @@ export const TwitchLiveSection: React.FC = () => {
   ];
 
   useEffect(() => {
+    // Animated chat messages
+    const addMessage = () => {
+      const randomMsg = chatPool[Math.floor(Math.random() * chatPool.length)];
+      const newMessage = { ...randomMsg, id: messageIdRef.current++ };
+      
+      setChatMessages(prev => {
+        const updated = [...prev, newMessage];
+        // Keep only last 8 messages
+        return updated.slice(-8);
+      });
+    };
+
+    // Start with a few messages
+    setTimeout(() => addMessage(), 100);
+    setTimeout(() => addMessage(), 500);
+    setTimeout(() => addMessage(), 1000);
+
+    // Continue adding messages
+    const interval = setInterval(addMessage, 100 + Math.random() * 1000);
+
+    return () => clearInterval(interval);
+  }, []);
+
+  useEffect(() => {
     // Stagger animation for schedule cards
     if (scheduleRef.current) {
       const cards = scheduleRef.current.querySelectorAll('.schedule-card');
@@ -66,6 +112,14 @@ export const TwitchLiveSection: React.FC = () => {
       );
     }
   }, []);
+
+  useEffect(() => {
+    // Smooth message transitions
+    if (chatRef.current && chatMessages.length > 8) {
+      // Remove excess messages for smooth animation
+      setChatMessages(prev => prev.slice(-8));
+    }
+  }, [chatMessages]);
 
   return (
     <section id="stream" className="py-32 bg-secondary/10 relative overflow-hidden">
@@ -149,29 +203,66 @@ export const TwitchLiveSection: React.FC = () => {
             </ScrollTriggerAnimation>
           </ScrollTriggerAnimation>
 
-          {/* Right: Twitch embed with architectural frame */}
+          {/* Right: Fake Twitch Chat */}
           <ScrollTriggerAnimation animation="slideInRight" delay={0.5} className="lg:col-span-5">
             <div className="relative">
-              <div className="aspect-video bg-background border-2 border-primary/20 rounded-lg overflow-hidden relative">
-                <div className="absolute inset-2 bg-gradient-to-br from-purple-900/30 via-background to-background flex items-center justify-center rounded-md">
-                  <div className="text-center space-y-4">
-                    <div className="w-20 h-20 bg-primary/20 rounded-full flex items-center justify-center mx-auto">
-                      <Radio className="w-10 h-10 text-primary animate-pulse" />
-                    </div>
-                    <h3 className="text-xl font-bold text-foreground">
-                      🔴 LIVE NOW
-                    </h3>
-                    <p className="text-muted-foreground text-sm max-w-48">
-                      Professional political commentary & occasional shirt removal
-                    </p>
-                    <Button
-                      variant="secondary"
-                      onClick={() => window.open(SOCIAL_LINKS.twitch, '_blank')}
-                      className="flex items-center gap-2 mt-4"
-                    >
-                      <ExternalLink size={16} />
-                      Open in Twitch
-                    </Button>
+              <div className="bg-gray-900 border-2 border-primary/20 rounded-lg overflow-hidden relative h-96">
+                {/* Full height chat messages */}
+                <div 
+                  ref={chatRef}
+                  className="h-full overflow-y-hidden bg-gray-900 p-4 flex flex-col-reverse"
+                  style={{ 
+                    scrollBehavior: 'smooth',
+                    scrollbarWidth: 'none',
+                    msOverflowStyle: 'none'
+                  }}
+                >
+                  <div className="flex flex-col gap-3">
+                    {chatMessages.map((msg, index) => (
+                      <div 
+                        key={msg.id} 
+                        className="flex items-start gap-2 text-sm transform transition-all duration-500 ease-out"
+                        style={{
+                          transform: `translateY(${(chatMessages.length - 1 - index) * -2}px)`,
+                          opacity: Math.max(0.3, 1 - (chatMessages.length - 1 - index) * 0.1)
+                        }}
+                      >
+                        <span className={`font-bold text-sm ${msg.color} flex-shrink-0`}>
+                          {msg.username}:
+                        </span>
+                        <span className="text-white/95 text-sm break-words leading-relaxed">
+                          {msg.message}
+                        </span>
+                      </div>
+                    ))}
+                    
+                    {/* Placeholder messages if chat is empty */}
+                    {chatMessages.length === 0 && (
+                      <>
+                        <div className="flex items-start gap-2 text-sm opacity-50">
+                          <span className="font-bold text-sm text-purple-400 flex-shrink-0">
+                            welcome_bot:
+                          </span>
+                          <span className="text-white/70 text-sm">
+                            Welcome to Hasan&apos;s chat! Please follow the rules.
+                          </span>
+                        </div>
+                        <div className="flex items-start gap-2 text-sm opacity-30">
+                          <span className="font-bold text-sm text-green-400 flex-shrink-0">
+                            moderator:
+                          </span>
+                          <span className="text-white/70 text-sm">
+                            Chat is now in slow mode.
+                          </span>
+                        </div>
+                      </>
+                    )}
+                  </div>
+
+                  {/* Floating chat info overlay */}
+                  <div className="absolute top-3 right-3 bg-black/50 backdrop-blur-sm rounded-full px-3 py-1 text-xs text-white/70 flex items-center gap-2">
+                    <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse" />
+                    45,231 viewers
                   </div>
                 </div>
               </div>

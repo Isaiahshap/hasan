@@ -5,6 +5,11 @@ export const generateMetadata = (): Metadata => {
   return {
     title: SITE_METADATA.title,
     description: SITE_METADATA.description,
+    icons: {
+      icon: '/hasan.png',
+      shortcut: '/hasan.png',
+      apple: '/hasan.png',
+    },
     keywords: [
       'Hasan Piker',
       'HasanAbi',

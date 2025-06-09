@@ -28,11 +28,6 @@ export const AboutSection: React.FC = () => {
       tooltip: "Peak performance reached during election streams." 
     },
     { 
-      label: "Shirtless Streams", 
-      value: "∞", 
-      tooltip: "GQ photoshoot material, daily." 
-    },
-    { 
       label: "Twitter Flame Wars", 
       value: "Daily", 
       tooltip: "Includes losses, wins, and questionable subtweets." 
@@ -68,10 +63,16 @@ export const AboutSection: React.FC = () => {
 
   return (
     <section id="about" className="py-32 bg-background relative overflow-hidden">
-      {/* Background brutalist elements */}
+      {/* Dynamic background */}
       <div className="absolute inset-0 pointer-events-none">
-        <div className="absolute top-1/3 right-0 w-1 h-40 bg-primary/20 rotate-12" />
-        <div className="absolute bottom-1/4 left-1/4 w-px h-24 bg-primary/40" />
+        {/* Animated gradient background */}
+        <div className="absolute inset-0 bg-gradient-to-br from-red-900/10 via-purple-900/15 to-blue-900/10 animate-pulse" />
+        <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-primary/5 to-transparent" />
+        
+        {/* Moving gradient blobs */}
+        <div className="absolute top-20 left-20 w-96 h-96 bg-gradient-to-br from-red-500/20 to-transparent rounded-full blur-3xl animate-pulse" style={{ animationDelay: '0s', animationDuration: '4s' }} />
+        <div className="absolute bottom-20 right-20 w-80 h-80 bg-gradient-to-tl from-purple-500/15 to-transparent rounded-full blur-3xl animate-pulse" style={{ animationDelay: '2s', animationDuration: '6s' }} />
+        <div className="absolute top-1/2 left-1/3 w-64 h-64 bg-gradient-to-r from-blue-500/10 to-transparent rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s', animationDuration: '5s' }} />
       </div>
 
       <div className="container-custom relative z-10">
@@ -87,20 +88,27 @@ export const AboutSection: React.FC = () => {
           {/* Left: Wide text block */}
           <ScrollTriggerAnimation animation="slideInLeft" delay={0.2} className="lg:col-span-7">
             <div className="space-y-8">
-              <div className="space-y-6">
-                <p className="text-2xl md:text-3xl leading-relaxed text-foreground font-light">
-                  <strong className="text-primary font-black">Hasan Piker</strong> is a Turkish-American political commentator, 
-                  Twitch streamer, and leftist icon.
-                </p>
+              {/* Glassmorphic container for main description */}
+              <div className="relative backdrop-blur-xl bg-background/60 border border-white/10 rounded-2xl p-8 shadow-2xl">
+                {/* Glassmorphic gradient overlay */}
+                <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-purple-500/5 rounded-2xl" />
+                <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/[0.02] to-transparent rounded-2xl" />
                 
-                <div className="pl-6 border-l-2 border-primary/30">
-                  <p className="text-xl leading-relaxed text-muted-foreground">
-                    He yells at neolibs, roasts crypto bros, debates fascists, and somehow still looks good doing it.
+                <div className="relative z-10 space-y-6">
+                  <p className="text-2xl md:text-3xl leading-relaxed text-foreground font-light">
+                    <strong className="text-primary font-black">Hasan Piker</strong> is a Turkish-American political commentator, 
+                    Twitch streamer, and leftist icon.
                   </p>
-                </div>
+                  
+                  <div className="pl-6 border-l-2 border-primary/40">
+                    <p className="text-xl leading-relaxed text-muted-foreground">
+                      He yells at neolibs, roasts crypto bros, debates fascists, and somehow still looks good doing it.
+                    </p>
+                  </div>
 
-                <div className="text-base text-muted-foreground/80 uppercase tracking-widest font-medium">
-                  Political streamer. Cultural menace. Probably yelling right now.
+                  <div className="text-base text-muted-foreground/90 uppercase tracking-widest font-medium">
+                    Political streamer. Cultural menace. Probably yelling right now.
+                  </div>
                 </div>
               </div>
 
